@@ -10,16 +10,21 @@ const env = process.env.NODE_ENV;
 
 const config = {
     input: `./src/index.js`,
-    external: Object.keys(pkg.peerDependencies || {}),
+    external: [
+        ...Object.keys(pkg.peerDependencies || {}),
+        ...Object.keys(pkg.dependencies || {})
+    ],
     output: [
         {
             file: `./dist/es/index.js`,
             format: 'es',
             name: pkg.name,
             globals: {
+                react: 'React',
                 redux: 'Redux',
+                'react-dom': 'ReactDom',
                 'react-redux': 'ReactRedux',
-                'lodash-es': 'lodashES'
+                'lodash-es': 'lodash'
             }
         },
         {
@@ -27,9 +32,11 @@ const config = {
             format: 'umd',
             name: pkg.name,
             globals: {
+                react: 'React',
                 redux: 'Redux',
+                'react-dom': 'ReactDom',
                 'react-redux': 'ReactRedux',
-                'lodash-es': 'lodashES'
+                'lodash-es': 'lodash'
             }
         }
     ],
@@ -48,14 +55,7 @@ const config = {
 };
 
 if (env === 'production') {
-    config.plugins.push(
-        terser({
-            pure_getters: true,
-            unsafe: true,
-            unsafe_comps: true,
-            warnings: false
-        })
-    );
+    config.plugins.push(terser());
 }
 
 config.plugins.push(fileSize());
