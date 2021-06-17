@@ -38,7 +38,7 @@ import { isObject, getNamespacedName } from './utils';
  */
 class ReactX {
     constructor({ config, name, parentName, preloadedState, path }) {
-        const { namespaced, state, reducers, actions, modules } = config;
+        const { namespaced, state, reducers, actions, modules } = config || {};
 
         this.config = config;
         this.namespaced = !!namespaced;
