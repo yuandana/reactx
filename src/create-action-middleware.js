@@ -28,19 +28,10 @@ export const createActionMiddleware = rootInstance => {
      */
     const commitHandler = (store, instance) => (reducerName, payload) => {
         const { dispatch } = store;
-        const { namespaced, parentName, path } = instance;
-        let nextReducerName = reducerName;
-
-        if (namespaced === true) {
-            if (
-                reducerName.indexOf(parentName?.toString().toUpperCase()) === -1
-            ) {
-                nextReducerName = getNamespacedName(reducerName, parentName);
-            }
-        }
+        const { path } = instance;
 
         dispatch({
-            type: nextReducerName,
+            type: reducerName,
             payload,
             // ReactX 的设计原则，reducer 只能在 action 中调用
             // 在 commit 触发 redux 的 reducer 时候，加入isReactX的标识
@@ -109,15 +100,9 @@ export const createActionMiddleware = rootInstance => {
         if (isObject(action) && action.type) {
             // 原生 redux reducer
             const reducerName = action.type;
-            const { isReactX, type, payload: reducerPayload } = action;
+            const { isReactX } = action;
             if (isReactX) {
                 // 过滤掉 isReactX 标识
-                // const nextPlainObject = {
-                //     ...action
-                // };
-                // if (reducerPayload) {
-                //     nextPlainObject.payload = reducerPayload;
-                // }
                 next({...action});
             } else {
                 throw new Error(
