@@ -28,7 +28,7 @@ export const createActionMiddleware = rootInstance => {
      */
     const commitHandler = (store, instance) => (reducerName, payload) => {
         const { dispatch } = store;
-        const { namespaced, parentName } = instance;
+        const { namespaced, parentName, path } = instance;
         let nextReducerName = reducerName;
 
         if (namespaced === true) {
@@ -46,7 +46,8 @@ export const createActionMiddleware = rootInstance => {
             // 在 commit 触发 redux 的 reducer 时候，加入isReactX的标识
             // 用于判断 reducer 一定是由 action => commit 的路径触发的
             // 而不是使用 redux 的 dispatch action.type 的方式绕过 action 直接触发 reducer
-            isReactX: true
+            isReactX: true,
+            path
         });
     };
 
@@ -111,13 +112,13 @@ export const createActionMiddleware = rootInstance => {
             const { isReactX, type, payload: reducerPayload } = action;
             if (isReactX) {
                 // 过滤掉 isReactX 标识
-                const nextPlainObject = {
-                    type
-                };
-                if (reducerPayload) {
-                    nextPlainObject.payload = reducerPayload;
-                }
-                next(nextPlainObject);
+                // const nextPlainObject = {
+                //     ...action
+                // };
+                // if (reducerPayload) {
+                //     nextPlainObject.payload = reducerPayload;
+                // }
+                next({...action});
             } else {
                 throw new Error(
                     `ReactX Error: You Must call the reducer '${reducerName}' in a Action!`

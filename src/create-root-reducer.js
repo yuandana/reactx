@@ -12,14 +12,14 @@ import { isFunction } from './utils';
  * @returns
  */
 export const createRootReducer = rootInstance => (_, action) => {
-    const { getInstanceByReducerName, getState } = rootInstance;
-    const { type, payload } = action;
+    const { getInstanceByInstancePath, getState } = rootInstance;
+    const { type, payload, path } = action;
     const reducerName = type;
 
     const isReduxAction = reducerName.indexOf('@@redux') !== -1;
 
     if (!isReduxAction) {
-        const itemInstance = getInstanceByReducerName(reducerName);
+        const itemInstance = getInstanceByInstancePath(path);
         const { state: moduleState, reducers = {} } = itemInstance || {};
         const reducerFn = reducers[reducerName];
         if (reducerFn && isFunction(reducerFn)) {

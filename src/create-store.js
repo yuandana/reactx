@@ -38,7 +38,6 @@ export const createStore = (config = {}, ...args) => {
     // 验证 actions & reducers 的名称唯一性
     // 如果不唯一则抛错
     rootInstance.checkActions();
-    rootInstance.checkReducers();
 
     // 集成 actionMiddleware
     const actionMiddleware = createActionMiddleware(rootInstance);

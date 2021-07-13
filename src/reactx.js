@@ -50,7 +50,6 @@ class ReactX {
 
         this.state = state || {};
         this.reducers = reducers || {};
-        this.constructorNamespacedReducers();
         this.actions = actions || {};
         this.constructorNamespacedActions();
         this.modules = modules || {};
@@ -85,27 +84,6 @@ class ReactX {
                 path
             });
         });
-    };
-
-    /**
-     * 初始化时构造当前实例的 reducers
-     *
-     * @returns
-     */
-    constructorNamespacedReducers = () => {
-        const { namespaced, parentName, reducers } = this;
-        if (namespaced === false) {
-            return;
-        }
-        if (!parentName) {
-            return;
-        }
-        const result = {};
-        Object.entries(reducers).forEach(([reducerName, reducerFn]) => {
-            const nextReducerName = getNamespacedName(reducerName, parentName);
-            result[nextReducerName] = reducerFn;
-        });
-        this.reducers = result;
     };
 
     /**
@@ -233,9 +211,9 @@ class ReactX {
         }
         let result;
         Object.values(this.children).find(childInstance => {
-            const actionFn = childInstance.getInstanceByActionName(actionName);
-            if (actionFn) {
-                result = actionFn;
+            const instance = childInstance.getInstanceByActionName(actionName);
+            if (instance) {
+                result = instance;
                 return true;
             }
             return false;
@@ -244,30 +222,28 @@ class ReactX {
     };
 
     /**
-     * 根据 reducerName 获取 ReactX 实例
-     * 因为 reducerName 一定是唯一的
+     * 根据 instance.path 获取 ReactX 实例
+     * 每个 action 只能调用自己实力内的 reducer（resource可以重复复用）
      *
      * @param {*} reducerName
      * @returns
      */
-    getInstanceByReducerName = reducerName => {
-        if (this.reducers[reducerName]) {
+    getInstanceByInstancePath = path => {
+        if (this.path === path) {
             return this;
         }
         let result;
         Object.values(this.children).find(childInstance => {
-            const reducerFn = childInstance.getInstanceByReducerName(
-                reducerName
-            );
-            if (reducerFn) {
-                result = reducerFn;
+            const instance = childInstance.getInstanceByInstancePath(path);
+            if (instance) {
+                result = instance;
                 return true;
             }
             return false;
         });
 
         return result;
-    };
+    }
 
     getState = () => {
         const { children, state } = this;
