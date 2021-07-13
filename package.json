@@ -1,6 +1,6 @@
 {
     "name": "@yuandana/reactx",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "description": "A simpler and easier way to use redux in react",
     "main": "dist/umd/index.js",
     "module": "dist/es/index.js",
